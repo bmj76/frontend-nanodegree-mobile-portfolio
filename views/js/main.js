@@ -421,38 +421,58 @@ var resizePizzas = function(size) {
 
   changeSliderLabel(size);
 
+
    // Returns the size difference to change a pizza element from one size to another. Called by changePizzaSlices(size).
-  function determineDx (elem, size) {
-    var oldWidth = elem.offsetWidth;
-    var windowWidth = document.querySelector("#randomPizzas").offsetWidth;
-    var oldSize = oldWidth / windowWidth;
+  // function determineDx (elem, size) {
+  // I commented this out because its not being called anymore.  I replaced with a simplex % based method below inside of changePizzaSizes()
+  //   var oldWidth = elem.offsetWidth;
+  //   var windowWidth = document.querySelector("#randomPizzas").offsetWidth;
+  //   var oldSize = oldWidth / windowWidth;
 
-    // Changes the slider value to a percent width
-    function sizeSwitcher (size) {
-      switch(size) {
-        case "1":
-          return 0.25;
-        case "2":
-          return 0.3333;
-        case "3":
-          return 0.5;
-        default:
-          console.log("bug in sizeSwitcher");
-      }
-    }
+  //   // Changes the slider value to a percent width
+  //   function sizeSwitcher (size) {
+  //     switch(size) {
+  //       case "1":
+  //         return 0.25;
+  //       case "2":
+  //         return 0.3333;
+  //       case "3":
+  //         return 0.5;
+  //       default:
+  //         console.log("bug in sizeSwitcher");
+  //     }
+  //   }
 
-    var newSize = sizeSwitcher(size);
-    var dx = (newSize - oldSize) * windowWidth;
+  //   var newSize = sizeSwitcher(size);
+  //   var dx = (newSize - oldSize) * windowWidth;
 
-    return dx;
-  }
+  //   return dx;
+  // }
 
   // Iterates through pizza elements on the page and changes their widths
   function changePizzaSizes(size) {
-    for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
-      var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
-      var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
+    //console.log('size is: ' + size);
+    //console.log('changePizzaSizes: ' + document.querySelectorAll(".randomPizzaContainer").length);
+
+    // Based on size, set a % to use
+    switch(size) {
+      case "1":
+        pizzaSize = 25.00;
+        break;
+      case "2":
+        pizzaSize = 33.33;
+        break;
+      case "3":
+        pizzaSize = 50.00;
+        break;
+      default:
+        pizzaSize = 25.00;
+    }
+
+    var allPizzas = document.querySelectorAll(".randomPizzaContainer");
+
+    for (var i = 0; i < allPizzas.length; i++) {
+      allPizzas[i].style.width = pizzaSize + '%';
     }
   }
 
@@ -502,9 +522,18 @@ function updatePositions() {
   window.performance.mark("mark_start_frame");
 
   var items = document.querySelectorAll('.mover');
-  for (var i = 0; i < items.length; i++) {
-    // document.body.scrollTop is no longer supported in Chrome.
-    var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+
+  //console.log('items length is: ', items.length);
+  // Discovered this has a lengh of 200.  Need to reduce it.
+
+  // Moved this out of the for loop to avoid some Jank
+  // document.body.scrollTop is no longer supported in Chrome.
+   var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+  // I simply divided the number of items by 7.  I suppose this could be improved by detecting a screen
+  //   size and setting the magic number to reduce even further.  The effect is that only the first
+  //   200/7 (or ~28) will move as the user scrolls. All others that are not visible are just standing still.
+  //   Perhaps an even more efficient way is to not create 200 to begin with!
+  for (var i = 0; i < items.length/7; i++) {
     var phase = Math.sin((scrollTop / 1250) + (i % 5));
     items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
   }

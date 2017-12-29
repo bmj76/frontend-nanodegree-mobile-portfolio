@@ -1,55 +1,73 @@
-## Website Performance Optimization portfolio project
+# frontend-nanodegree-website-optimization by Brian Johnson
 
-Your challenge, if you wish to accept it (and we sure hope you will), is to optimize this online portfolio for speed! In particular, optimize the critical rendering path and make this page render as quickly as possible by applying the techniques you've picked up in the [Critical Rendering Path course](https://www.udacity.com/course/ud884).
+Working on increasing the Google PageSpeed insights score and the scrolling FPS on an existing page.
 
-To get started, check out the repository and inspect the code.
+## Getting Started
+Load any Web Server on your PC, then clone the repository under the webroot 
+folder (ie. htdocs) to an weboptimization folder.  Example:
 
-### Getting started
+`git clone https://github.com/bmj76/frontend-nanodegree-mobile-portfolio.git c:\miniweb\htdocs\weboptimization`
 
-#### Part 1: Optimize PageSpeed Insights score for index.html
+Simply open http://127.0.0.1:8000/weboptimization/index.html to start the app.
 
-Some useful tips to help you get started:
+To view the Google PageSpeed score, you will also need to clone this to a server reachable on the Internet or use a pinhole application such as ngrok.
 
-1. Check out the repository
-1. To inspect the site on your phone, you can run a local server
+## Improvements Made
 
-  ```bash
-  $> cd /path/to/your-project-folder
-  $> python -m SimpleHTTPServer 8080
-  ```
+### Removed render blocking
 
-1. Open a browser and visit localhost:8080
-1. Download and install [ngrok](https://ngrok.com/) to the top-level of your project directory to make your local server accessible remotely.
+CSS WebFont - I used a suggestion from https://developers.google.com/speed/docs/insights/OptimizeCSSDelivery to inline css even when it is contained in a separate file.
 
-  ``` bash
-  $> cd /path/to/your-project-folder
-  $> ./ngrok http 8080
-  ```
+CSS - Moved the style.css content into a `<style>` tag within index.html.  I considered not making this change because other html files on the page use the same CSS file, but it is short enough so I went for it in the name of a faster load time.
 
-1. Copy the public URL ngrok gives you and try running it through PageSpeed Insights! Optional: [More on integrating ngrok, Grunt and PageSpeed.](http://www.jamescryer.com/2014/06/12/grunt-pagespeed-and-ngrok-locally-testing/)
+CSS - I added a media statement to the print.css tag.  This file is only needed if the page is being printed.  Adding this removes it as a render blocking CSS file in the CRP.
 
-Profile, optimize, measure... and then lather, rinse, and repeat. Good luck!
+JavaScript - I was able to add the async keyword to the call to Google analytics.  This is not necessary in the CRP.
 
-#### Part 2: Optimize Frames per Second in pizza.html
+### Minified Code
 
-To optimize views/pizza.html, you will need to modify views/js/main.js until your frames per second rate is 60 fps or higher. You will find instructive comments in main.js. 
+All local Javascript and CSS have been minified (that are loaded by index.html).  I did not apply the same CRP improvements to the Pizza page..  
 
-You might find the FPS Counter/HUD Display useful in Chrome developer tools described here: [Chrome Dev Tools tips-and-tricks](https://developer.chrome.com/devtools/docs/tips-and-tricks).
+I did also Minify the HTML, but found that it only improved the page load slightly.  (1 point gain on mobile pagespeed, 0 point gain on desktop) I decided not to minify it in the final project in favor of better readability.
 
-### Optimization Tips and Tricks
-* [Optimizing Performance](https://developers.google.com/web/fundamentals/performance/ "web performance")
-* [Analyzing the Critical Rendering Path](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/analyzing-crp.html "analyzing crp")
-* [Optimizing the Critical Rendering Path](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/optimizing-critical-rendering-path.html "optimize the crp!")
-* [Avoiding Rendering Blocking CSS](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/render-blocking-css.html "render blocking css")
-* [Optimizing JavaScript](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript.html "javascript")
-* [Measuring with Navigation Timing](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/measure-crp.html "nav timing api"). We didn't cover the Navigation Timing API in the first two lessons but it's an incredibly useful tool for automated page profiling. I highly recommend reading.
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/eliminate-downloads.html">The fewer the downloads, the better</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer.html">Reduce the size of text</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/image-optimization.html">Optimize images</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching.html">HTTP caching</a>
+### Image Resizing
 
-### Customization with Bootstrap
-The portfolio was built on Twitter's <a href="http://getbootstrap.com/">Bootstrap</a> framework. All custom styles are in `dist/css/portfolio.css` in the portfolio repo.
+All images have been compressed using http://Compressor.io and where necessary resized using ImageMagick.
 
-* <a href="http://getbootstrap.com/css/">Bootstrap's CSS Classes</a>
-* <a href="http://getbootstrap.com/components/">Bootstrap's Components</a>
+### Performance Improvements to the Pizza page scrolling
+
+Moved the `var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;` line outside of the for loop to avoid having to recalculate style over 200 times per function call.  This was the biggest cause of Jank.
+
+Discovered that there are 200 floating pizzas on the page.  Not all need to have the moving effect applied because they are not visible.  I divided by 7 to apply the effect to only the first ~28 or so.  Obviously it would be best not to create 200, but I'm not sure what other code would need to change at this time to accomplish that.  
+
+### Performance Improvements to the Pizza Size Slider
+
+Refactored the changePizzaSizes function to use a simpler method to adjust size using % instead of a more complicated pixel size based on screen width.
+
+``` // Based on size, set a % to use
+    switch(size) {
+      case "1":
+        pizzaSize = 25.00;
+        break;
+      case "2":
+        pizzaSize = 33.33;
+        break;
+      case "3":
+        pizzaSize = 50.00;
+        break;
+      default:
+        pizzaSize = 25.00;
+    }
+
+    var allPizzas = document.querySelectorAll(".randomPizzaContainer");
+
+    for (var i = 0; i < allPizzas.length; i++) {
+      allPizzas[i].style.width = pizzaSize + '%';
+    }```
+
+
+
+
+
+
+ 
