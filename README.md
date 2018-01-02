@@ -22,6 +22,8 @@ CSS - Moved the style.css content into a `<style>` tag within index.html.  I con
 
 CSS - I added a media statement to the print.css tag.  This file is only needed if the page is being printed.  Adding this removes it as a render blocking CSS file in the CRP.
 
+CSS - I added `transform: translateZ(0);` and `backface-visibility: hidden;` to the .mover class in views\css\style.css per reviewer's suggestion
+
 JavaScript - I was able to add the async keyword to the call to Google analytics.  This is not necessary in the CRP.
 
 ### Minified Code
@@ -66,8 +68,53 @@ Refactored the changePizzaSizes function to use a simpler method to adjust size 
     }```
 
 
+Restructured the following for loop:
 
+From:
+```
+for (var i = 2; i < 100; i++) {
+  var pizzasDiv = document.getElementById("randomPizzas");
+  pizzasDiv.appendChild(pizzaElementGenerator(i));
+}
+```
+To:
+```
+var pizzasDiv = document.getElementById('randomPizzas');
+for (var i = 2; i < 100; i++) {
+     pizzasDiv.appendChild(pizzaElementGenerator(i));
+}
+```
 
+This change was to move the document.getElementById call outside of the for loop to reduce the number of DOM searches.
 
+ Changed document.querySelectorAll to document.getElementsByClassName
 
+ Changed document.querySelector to document.getElementById
+
+ Modified the code so that the number of floating pizzas created is based on the the screen height divided by the size of the pizza.
+ It now will generate 8 pizzas per row based on screen height.  See below:
  
+ ```
+  document.addEventListener('DOMContentLoaded', function() {
+  var cols = 8;
+  var s = 256;
+  var windowHeight = window.screen.height;
+  var rows = Math.floor(windowHeight / s);
+  var pizzas = rows * cols;
+ 
+  for (var i = 0; i < 200; i++) {
+    var elem = document.createElement('img');
+    elem.className = 'mover';
+    elem.src = "images/pizza.png";
+    elem.style.height = "100px";
+    elem.style.width = "73.333px";
+    elem.basicLeft = (i % cols) * s;
+    elem.style.top = (Math.floor(i / cols) * s) + 'px';
+    document.getElementById("movingPizzas1").appendChild(elem);
+  }
+  updatePositions();
+});
+```
+
+Math.floor was used based on the need for a simple method to truncate the rows variable to the whole number: 
+https://stackoverflow.com/questions/4912788/truncate-not-round-off-decimal-numbers-in-javascript

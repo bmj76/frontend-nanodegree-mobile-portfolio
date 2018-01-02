@@ -406,13 +406,13 @@ var resizePizzas = function(size) {
   function changeSliderLabel(size) {
     switch(size) {
       case "1":
-        document.querySelector("#pizzaSize").innerHTML = "Small";
+        document.getElementById("pizzaSize").innerHTML = "Small";
         return;
       case "2":
-        document.querySelector("#pizzaSize").innerHTML = "Medium";
+        document.getElementById("pizzaSize").innerHTML = "Medium";
         return;
       case "3":
-        document.querySelector("#pizzaSize").innerHTML = "Large";
+        document.getElementById("pizzaSize").innerHTML = "Large";
         return;
       default:
         console.log("bug in changeSliderLabel");
@@ -469,7 +469,7 @@ var resizePizzas = function(size) {
         pizzaSize = 25.00;
     }
 
-    var allPizzas = document.querySelectorAll(".randomPizzaContainer");
+    var allPizzas = document.getElementsByClassName("randomPizzaContainer");
 
     for (var i = 0; i < allPizzas.length; i++) {
       allPizzas[i].style.width = pizzaSize + '%';
@@ -521,9 +521,9 @@ function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
 
-  var items = document.querySelectorAll('.mover');
+  var items = document.getElementsByClassName('mover');
 
-  //console.log('items length is: ', items.length);
+  console.log('items length is: ', items.length);
   // Discovered this has a lengh of 200.  Need to reduce it.
 
   // Moved this out of the for loop to avoid some Jank
@@ -533,7 +533,7 @@ function updatePositions() {
   //   size and setting the magic number to reduce even further.  The effect is that only the first
   //   200/7 (or ~28) will move as the user scrolls. All others that are not visible are just standing still.
   //   Perhaps an even more efficient way is to not create 200 to begin with!
-  for (var i = 0; i < items.length/7; i++) {
+  for (var i = 0; i < items.length; i++) {
     var phase = Math.sin((scrollTop / 1250) + (i % 5));
     items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
   }
@@ -555,6 +555,17 @@ window.addEventListener('scroll', updatePositions);
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
+
+  var windowHeight = window.screen.height;
+  //Calculate the number of whole rows.. Math.floor idea came from: https://stackoverflow.com/questions/4912788/truncate-not-round-off-decimal-numbers-in-javascript
+  var rows = Math.floor(windowHeight / s);
+
+  var pizzas = rows * cols;
+  //console.log("Window Height: " + windowHeight);
+  // console.log("rows: " + rows);
+  // console.log("pizzas: " + pizzas);
+  // console.log("Window Height: " + windowHeight);
+
   for (var i = 0; i < 200; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
@@ -563,7 +574,7 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.style.width = "73.333px";
     elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
-    document.querySelector("#movingPizzas1").appendChild(elem);
+    document.getElementById("movingPizzas1").appendChild(elem);
   }
   updatePositions();
 });
