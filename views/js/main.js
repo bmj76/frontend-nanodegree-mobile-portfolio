@@ -566,7 +566,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // console.log("pizzas: " + pizzas);
   // console.log("Window Height: " + windowHeight);
 
-  for (var i = 0; i < 200; i++) {
+  for (var i = 0; i < pizzas; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
