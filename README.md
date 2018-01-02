@@ -65,7 +65,8 @@ Refactored the changePizzaSizes function to use a simpler method to adjust size 
 
     for (var i = 0; i < allPizzas.length; i++) {
       allPizzas[i].style.width = pizzaSize + '%';
-    }```
+    }
+```
 
 
 Restructured the following for loop:
@@ -93,8 +94,7 @@ This change was to move the document.getElementById call outside of the for loop
 
  Modified the code so that the number of floating pizzas created is based on the the screen height divided by the size of the pizza.
  It now will generate 8 pizzas per row based on screen height.  See below:
- 
- ```
+```
   document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
@@ -117,4 +117,4 @@ This change was to move the document.getElementById call outside of the for loop
 ```
 
 Math.floor was used based on the need for a simple method to truncate the rows variable to the whole number: 
-https://stackoverflow.com/questions/4912788/truncate-not-round-off-decimal-numbers-in-javascript
+[https://stackoverflow.com/questions/4912788/truncate-not-round-off-decimal-numbers-in-javascript]
