@@ -523,18 +523,14 @@ function updatePositions() {
 
   var items = document.getElementsByClassName('mover');
 
-  console.log('items length is: ', items.length);
+  // console.log('items length is: ', items.length);
   // Discovered this has a lengh of 200.  Need to reduce it.
 
   // Moved this out of the for loop to avoid some Jank
   // document.body.scrollTop is no longer supported in Chrome.
    var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-  // I simply divided the number of items by 7.  I suppose this could be improved by detecting a screen
-  //   size and setting the magic number to reduce even further.  The effect is that only the first
-  //   200/7 (or ~28) will move as the user scrolls. All others that are not visible are just standing still.
-  //   Perhaps an even more efficient way is to not create 200 to begin with!
-  for (var i = 0; i < items.length; i++) {
-    var phase = Math.sin((scrollTop / 1250) + (i % 5));
+  for (var i = 0, phase, len = items.length; i < len; i++) {
+    phase = Math.sin((scrollTop / 1250) + (i % 5));
     items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
   }
 
@@ -565,16 +561,16 @@ document.addEventListener('DOMContentLoaded', function() {
   // console.log("rows: " + rows);
   // console.log("pizzas: " + pizzas);
   // console.log("Window Height: " + windowHeight);
-
-  for (var i = 0; i < pizzas; i++) {
-    var elem = document.createElement('img');
+  var movingPizza = document.getElementById("movingPizzas1");
+  for (var i = 0, elem; i < pizzas; i++) {
+    elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
     elem.style.height = "100px";
     elem.style.width = "73.333px";
     elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
-    document.getElementById("movingPizzas1").appendChild(elem);
+    movingPizza.appendChild(elem);
   }
   updatePositions();
 });
